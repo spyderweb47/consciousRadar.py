@@ -12,4 +12,4 @@ optional arguments:
                         Project Name
 
 by default it will store logs in "/opt/tools/spydertool/Log-consciousRadar/" 
-cahnge line 13 in source for your log location
+change line 13 in source for your log location
