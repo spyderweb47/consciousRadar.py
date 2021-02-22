@@ -3,7 +3,6 @@
 import sys
 import subprocess
 import os
-from termcolor import colored
 import argparse
 from functools import wraps
 import errno
@@ -60,7 +59,7 @@ else:
 
 
 #folder data extracter
-folderfiles=subprocess.check_output(''' ls '''+folderlocation+'''|sort -u ''',shell=True,text=True)
+folderfiles=subprocess.check_output(''' ls -p '''+folderlocation+ ''' |grep -i / |sed 's/\\///g'|xargs -i sh -c "tree -a -f -i -n|sed 's/\\.\\///g'"|sort -u''',shell=True,text=True)
 filelist=folderfiles.split("\n")
 filelist.remove("")
 
@@ -85,37 +84,44 @@ def dupe(arg):
 @timeout(15)
 def xgf_check(filename):
 		
-	dupe(f"\nFilename:     {folderlocation}/{filename}")
-	#dupe(f"File Location:  {folderlocation}")
-	print(colored(f"  |","green"))
+	# dupe(f"\nFilename:     {folderlocation}/{filename}")
+	# #dupe(f"File Location:  {folderlocation}")
+	# print(colored(f"  |","green"))
 
 
-
-	if filename.endswith('.js'):
-		for key in pattern_list:
-			try:
-				check_cmd=subprocess.check_output(f"cat {folderlocation}/{filename} | js-beautify | xgf {key}",shell=True,text=True,stderr=True)
-				if(len(check_cmd) > 1):
-					dupe(colored(f"  |-{key}","green"))
-				else:
+	try:
+		if filename.endswith('.js'):
+			for key in pattern_list:
+				try:
+					check_cmd=subprocess.check_output(f"cat {folderlocation}/{filename} | js-beautify | xgf {key}",shell=True,text=True,stderr=DNULL)
+					if(len(check_cmd) > 1):
+						dupe(f"Filename:     {folderlocation}/{filename}")
+						dupe(f"  |-{key}")
+						dupe(f"\n{check_cmd}")
+						print("---------------------\n")
+					else:
+						pass
+				except:
 					pass
-			except:
-				pass
 
-	else:
-		for key in pattern_list:
-			try:
-				check_cmd=subprocess.check_output(f"cat {folderlocation}/{filename} | xgf {key}",shell=True,text=True,stderr=True)
-				if(len(check_cmd) > 1):
-					dupe(colored(f"  |-{key}","green"))
-				else:
+		else:
+			for key in pattern_list:
+				try:
+					check_cmd=subprocess.check_output(f"cat {folderlocation}/{filename} | xgf {key}",shell=True,text=True,stderr=DNULL)
+					if(len(check_cmd) > 1):
+						dupe(f"Filename:     {folderlocation}/{filename}")
+						dupe(f"  |-{key}")
+						dupe(f"\n{check_cmd}")
+						print("---------------------\n")
+					else:
+						pass
+				except:
 					pass
-			except:
-				pass
-
+	except:
+		print(f"errot {filename}")
 	#unconditional only for automation
 	#dupe(f"  |   File Location:  {folderlocation}")
-	print("---------------------\n")
+	# print("---------------------\n")
 
 
 
